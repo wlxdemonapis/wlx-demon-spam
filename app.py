@@ -6,12 +6,11 @@ from byte import Encrypt_ID, encrypt_api
 
 app = Flask(__name__)
 
-# Tokenleri dosyadan yükleme fonksiyonu
 def load_tokens():
     try:
         with open("spam_ind.json", "r") as file:
             data = json.load(file)
-        tokens = [item["token"] for item in data]  # JSON'dan tokenleri çıkar
+        tokens = [item["token"] for item in data]
         return tokens
     except Exception as e:
         print(f"Error loading tokens: {e}")
@@ -47,19 +46,17 @@ def send_friend_request(player_id, token, results):
 @app.route("/send_requests", methods=["GET"])
 def send_requests():
     player_id = request.args.get("player_id")
-
     if not player_id:
         return jsonify({"error": "player_id parameter is required"}), 400
 
-    tokens = load_tokens()  # Tokenleri dosyadan al
-
+    tokens = load_tokens()
     if not tokens:
         return jsonify({"error": "No tokens found in spam_ind.json"}), 500
 
     results = {"success": 0, "failed": 0}
     threads = []
 
-    for token in tokens[:100]:  # Maksimum 100 istek gönder
+    for token in tokens[:100]:
         thread = threading.Thread(target=send_friend_request, args=(player_id, token, results))
         threads.append(thread)
         thread.start()
@@ -73,6 +70,10 @@ def send_requests():
         "success_count": results["success"],
         "failed_count": results["failed"]
     })
+
+# Vercel ke liye handler function
+def handler(event, context):
+    return app(event, context)
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
