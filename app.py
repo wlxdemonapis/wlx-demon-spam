@@ -6,12 +6,19 @@ from byte import Encrypt_ID, encrypt_api
 
 app = Flask(__name__)
 
+import os
+import json
+
 def load_tokens():
     try:
-        with open("spam_ind.json", "r") as file:
-            data = json.load(file)
-        tokens = [item["token"] for item in data]  # Extract tokens from JSON
-        return tokens
+        json_data = os.getenv("spam_ind.json")  # Vercel environment variable se load karein
+        if json_data:
+            data = json.loads(json_data)
+            tokens = [item["token"] for item in data]
+            return tokens
+        else:
+            print("Error: SPAM_IND_JSON environment variable not found")
+            return []
     except Exception as e:
         print(f"Error loading tokens: {e}")
         return []
