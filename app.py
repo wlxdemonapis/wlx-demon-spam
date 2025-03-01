@@ -10,7 +10,7 @@ def load_tokens():
     try:
         with open("spam_ind.json", "r") as file:
             data = json.load(file)
-        tokens = [item["token"] for item in data]
+        tokens = [item["token"] for item in data]  # Extract tokens from JSON
         return tokens
     except Exception as e:
         print(f"Error loading tokens: {e}")
@@ -46,10 +46,12 @@ def send_friend_request(player_id, token, results):
 @app.route("/send_requests", methods=["GET"])
 def send_requests():
     player_id = request.args.get("player_id")
+
     if not player_id:
         return jsonify({"error": "player_id parameter is required"}), 400
 
     tokens = load_tokens()
+
     if not tokens:
         return jsonify({"error": "No tokens found in spam_ind.json"}), 500
 
@@ -70,10 +72,6 @@ def send_requests():
         "success_count": results["success"],
         "failed_count": results["failed"]
     })
-
-# Vercel ke liye handler function
-def handler(event, context):
-    return app(event, context)
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
