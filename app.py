@@ -46,7 +46,7 @@ def send_friend_request(player_id, token, results):
 
 @app.route("/send_requests", methods=["GET"])
 def send_requests():
-    player_id = request.args.get("player_id")
+    uid = request.args.get("uid")
 
     if not player_id:
         return jsonify({"error": "player_id parameter is required"}), 400
