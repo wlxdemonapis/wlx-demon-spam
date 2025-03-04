@@ -17,8 +17,8 @@ def load_tokens():
         print(f"Error loading tokens: {e}")
         return []
 
-def send_friend_request(player_id, token, results):
-    encrypted_id = Encrypt_ID(player_id)
+def send_friend_request(uid, token, results):
+    encrypted_id = Encrypt_ID(uid)
     payload = f"08a7c4839f1e10{encrypted_id}1801"
     encrypted_payload = encrypt_api(payload)
 
@@ -46,10 +46,10 @@ def send_friend_request(player_id, token, results):
 
 @app.route("/send_requests", methods=["GET"])
 def send_requests():
-    uid = request.args.get("player_id")
+    uid = request.args.get("uid")  # `player_id` ko `uid` me badal diya
 
-    if not player_id:
-        return jsonify({"error": "player_id parameter is required"}), 400
+    if not uid:
+        return jsonify({"error": "uid parameter is required"}), 400
 
     tokens = load_tokens()  # Tokenleri dosyadan al
 
@@ -60,7 +60,7 @@ def send_requests():
     threads = []
 
     for token in tokens[:100]:  # Maksimum 100 istek gönder
-        thread = threading.Thread(target=send_friend_request, args=(player_id, token, results))
+        thread = threading.Thread(target=send_friend_request, args=(uid, token, results))
         threads.append(thread)
         thread.start()
 
@@ -68,7 +68,7 @@ def send_requests():
         thread.join()
 
     return jsonify({
-        "player_id": player_id,
+        "uid": uid,
         "total_requests": len(tokens[:100]),
         "success_count": results["success"],
         "failed_count": results["failed"]
