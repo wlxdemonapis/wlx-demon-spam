@@ -67,8 +67,8 @@ def send_requests():
     for thread in threads:
         thread.join()
 
-    total_requests = results["success"] + results["failed"]
-    status = 1 if total_requests != 0 else 2  # Eğer istek gönderildiyse 1, hiç gönderilmediyse 2
+    total requests= results["success"] + results["failed"]
+    status = 1 if success_count != 0 else 2  # Eğer istek gönderildiyse 1, hiç gönderilmediyse 2
 
     return jsonify({
         "success_count": results["success"],
