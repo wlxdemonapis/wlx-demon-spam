@@ -6,6 +6,9 @@ from byte import Encrypt_ID, encrypt_api
 
 app = Flask(__name__)
 
+# Static API Key (Change this as needed)
+API_KEY = "ffwlx"
+
 # Tokenleri dosyadan yükleme fonksiyonu
 def load_tokens():
     try:
@@ -47,12 +50,16 @@ def send_friend_request(uid, token, results):
 @app.route("/send_requests", methods=["GET"])
 def send_requests():
     uid = request.args.get("uid")
+    api_key = request.args.get("key")  # API key URL ke last me "key" ke naam se expect karega
+
+    # API Key validation
+    if not api_key or api_key != API_KEY:
+        return jsonify({"error": "Invalid or missing API key"}), 403
 
     if not uid:
         return jsonify({"error": "uid parameter is required"}), 400
 
     tokens = load_tokens()
-
     if not tokens:
         return jsonify({"error": "No tokens found in spam_ind.json"}), 500
 
