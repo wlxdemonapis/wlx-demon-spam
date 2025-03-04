@@ -38,7 +38,7 @@ def send_friend_request(uid, token, results):
     }
 
     response = requests.post(url, headers=headers, data=bytes.fromhex(encrypted_payload))
-
+    
     if response.status_code == 200:
         results["success"] += 1
     else:
@@ -46,12 +46,12 @@ def send_friend_request(uid, token, results):
 
 @app.route("/send_requests", methods=["GET"])
 def send_requests():
-    uid = request.args.get("uid")  # `player_id` ko `uid` me badal diya
+    uid = request.args.get("uid")
 
     if not uid:
         return jsonify({"error": "uid parameter is required"}), 400
 
-    tokens = load_tokens()  # Tokenleri dosyadan al
+    tokens = load_tokens()
 
     if not tokens:
         return jsonify({"error": "No tokens found in spam_ind.json"}), 500
@@ -67,11 +67,13 @@ def send_requests():
     for thread in threads:
         thread.join()
 
+    total_requests = results["success"] + results["failed"]
+    status = 1 if total_requests != 0 else 2  # Eğer istek gönderildiyse 1, hiç gönderilmediyse 2
+
     return jsonify({
-        "uid": uid,
-        "total_requests": len(tokens[:100]),
         "success_count": results["success"],
-        "failed_count": results["failed"]
+        "failed_count": results["failed"],
+        "status": status
     })
 
 if __name__ == "__main__":
