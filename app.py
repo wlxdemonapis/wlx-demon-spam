@@ -38,7 +38,7 @@ def send_friend_request(uid, token, results):
     }
 
     response = requests.post(url, headers=headers, data=bytes.fromhex(encrypted_payload))
-    
+
     if response.status_code == 200:
         results["success"] += 1
     else:
@@ -67,8 +67,8 @@ def send_requests():
     for thread in threads:
         thread.join()
 
-    total requests= results["success"] + results["failed"]
-    status = 1 if success_count != 0 else 2  # Eğer istek gönderildiyse 1, hiç gönderilmediyse 2
+    total_requests = results["success"] + results["failed"]
+    status = 1 if results["success"] != 0 else 2  # Başarılı istek varsa 1, yoksa 2
 
     return jsonify({
         "success_count": results["success"],
